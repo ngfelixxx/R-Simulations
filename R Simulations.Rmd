@@ -1,0 +1,122 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question 1:
+```{r}
+#a
+N <- 10000
+set.seed(0)
+#create a vector of probabilities for each of the 52 cards in the deck (use rep)
+#p <- rep(rep(1:13)/52,4) #P=4/52 == P=1/13
+p = rep(1/13, 13) #out of 13 is the same as out of 52 
+#create a vector of all the possible cards we can get 
+card_names <- c("ace", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "jack", "queen", "king")
+#size of names and prob is both 13 atm 
+#create a table of the outcomes of the 2 cards that get drawn 
+first <- sample(card_names, N, replace=TRUE, prob=p)
+second <- sample(card_names, N, replace=TRUE, prob=p)
+sorting <- data.frame(cbind(first,second))
+print(sorting) 
+#check if one card is ace and the other one is c10,jack,queen,king
+count = 0
+for(i in 1:10000){
+  if(sorting[i,c("first")] %in% c("c10","jack","queen","king") && sorting[i,c("second")] %in% c("ace") | sorting[i,c("second")] %in% c("c10","jack","queen","king") && sorting[i,c("first")] %in% c("ace")){
+    count = count + 1 
+  }
+}
+print(count/N) #0.0484 == %4.84
+
+```
+
+Question 2:
+```{r}
+#Lambda <- 3
+#Number of customrs per hour <- 4
+#Hours operating each day <- 8
+waiting_customers <- function(L = 3, N = 4, H = 8){
+  x <- 1:8
+  px <- rpois(x, lambda = 3)
+  #print(px)
+  temp <- rep(NA,8)
+  for(i in x){
+    var = N-px[i]
+    if(var < 0){
+      temp[i] = var*var
+    } else {
+      temp[i] = 0
+    }
+    print(paste0("Hour",i,": ",temp[i]))
+  }
+  #print(temp)
+}
+waiting_customers()
+```
+
+Question 3:
+```{r}
+N <- 10000 
+set.seed(0)
+prize <- rep(NA, times = N)
+
+#strategy 1
+var = 0
+for(i in 1 : N){
+  doors <- sample(x = c("Prize", "Goat", "Goat"), size = 3, replace = FALSE)
+  options <- 1 : 3 
+  contestant.door <- sample(x = options, size = 1)
+  #Don't revel the door: pick -> end with $3k
+  var = 3000
+}
+paste0(var) 
+
+```
+```{r}
+N <- 10000 
+set.seed(0)
+prize <- rep(NA, times = N)
+#strategy 2
+count = 0
+for(i in 1 : N){
+  doors <- sample(x = c("Prize", "Goat", "Goat"), size = 3, replace = FALSE)
+  options <- 1 : 3 
+  contestant.door <- sample(x = options, size = 1)
+  monty.reveal <- options[!(options %in% contestant.door)] 
+  if(length(monty.reveal) == 1){
+    revealed.door <- monty.reveal
+  } else {
+    revealed.door <- sample(x = monty.reveal, size = 1)
+  }
+  #Pick and stay with choice(do nothing): pick -> stay 
+  if(doors[contestant.door] == "Prize"){
+    count = count + 10000
+  }
+}
+paste0(count/N)
+```
+
+```{r}
+N <- 10000 
+set.seed(0)
+prize <- rep(NA, times = N)
+#strategy 3 
+count = 0
+for(i in 1 : N){
+  doors <- sample(x = c("Prize", "Goat", "Goat"), size = 3, replace = FALSE)
+  options <- 1 : 3 
+  contestant.door <- sample(x = options, size = 1)
+  monty.reveal <- options[!(options %in% contestant.door)]
+  if(length(monty.reveal) == 1){
+    revealed.door <- monty.reveal
+  } else{
+    revealed.door <- sample(x = monty.reveal, size = 1)
+  }
+  #Pick and switch doors: pick -> pick 
+  contestant.door <- options[-c(contestant.door, revealed.door)] 
+  if(doors[contestant.door] == "Prize"){
+    count = count + 10000
+  }
+}
+paste0(count/N)
+```
